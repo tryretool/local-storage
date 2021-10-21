@@ -7,21 +7,15 @@ var tracking = require('./tracking');
 
 // from https://github.com/munkacsimark/local-data-storage/blob/236f1fbb9ef5f794f22361d3c2eff9c7ea5bddec/dist/validator.js#L4
 const isLocalStorageAvailable = () => {
-  const storage = global.localStorage;
   try {
+      const storage = global.localStorage;
       const testItem = "__storage_test__";
       storage.setItem(testItem, testItem);
       storage.removeItem(testItem);
       return true;
   }
   catch (e) {
-      return (e instanceof DOMException &&
-          (e.code === 22 ||
-              e.code === 1014 ||
-              e.name === "QuotaExceededError" ||
-              e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-          storage &&
-          storage.length !== 0);
+      return false
   }
 };
 
