@@ -55,17 +55,10 @@ function clear () {
   return ls.clear();
 }
 
-function backend (store) {
-  store && (ls = store);
-
-  return ls;
-}
-
 accessor.set = set;
 accessor.get = get;
 accessor.remove = remove;
 accessor.clear = clear;
-accessor.backend = backend;
 accessor.on = tracking.on;
 accessor.off = tracking.off;
 
