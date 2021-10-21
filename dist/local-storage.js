@@ -4,7 +4,28 @@
 
 var stub = require('./stub');
 var tracking = require('./tracking');
-var ls = 'localStorage' in global && global.localStorage ? global.localStorage : stub;
+
+// from https://github.com/munkacsimark/local-data-storage/blob/236f1fbb9ef5f794f22361d3c2eff9c7ea5bddec/dist/validator.js#L4
+const isLocalStorageAvailable = () => {
+  const storage = global.localStorage;
+  try {
+      const testItem = "__storage_test__";
+      storage.setItem(testItem, testItem);
+      storage.removeItem(testItem);
+      return true;
+  }
+  catch (e) {
+      return (e instanceof DOMException &&
+          (e.code === 22 ||
+              e.code === 1014 ||
+              e.name === "QuotaExceededError" ||
+              e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+          storage &&
+          storage.length !== 0);
+  }
+};
+
+var ls = isLocalStorageAvailable() ? global.localStorage : stub;
 
 function accessor (key, value) {
   if (arguments.length === 1) {
@@ -34,10 +55,17 @@ function clear () {
   return ls.clear();
 }
 
+function backend (store) {
+  store && (ls = store);
+
+  return ls;
+}
+
 accessor.set = set;
 accessor.get = get;
 accessor.remove = remove;
 accessor.clear = clear;
+accessor.backend = backend;
 accessor.on = tracking.on;
 accessor.off = tracking.off;
 
@@ -50,7 +78,7 @@ module.exports = accessor;
 var ms = {};
 
 function getItem (key) {
-  return 'key' in ms ? ms[key] : null;
+  return key in ms ? ms[key] : null;
 }
 
 function setItem (key, value) {
