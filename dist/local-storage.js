@@ -28,18 +28,27 @@ function accessor (key, value) {
   return set(key, value);
 }
 
+function getRaw(key) {
+  return ls.getItem(key)
+}
+
 function get (key) {
-  return JSON.parse(ls.getItem(key));
+  return JSON.parse(getRaw(key));
 }
 
 function set (key, value) {
   try {
-    ls.setItem(key, JSON.stringify(value));
+    setRaw(key, JSON.stringify(value));
     return true;
   } catch (e) {
     return false;
   }
 }
+
+function setRaw(key, stringValue) {
+  return ls.setItem(key, stringValue)
+}
+
 
 function remove (key) {
   return ls.removeItem(key);
@@ -51,6 +60,8 @@ function clear () {
 
 accessor.set = set;
 accessor.get = get;
+accessor.setRaw = setRaw;
+accessor.getRaw = getRaw;
 accessor.remove = remove;
 accessor.clear = clear;
 accessor.on = tracking.on;
